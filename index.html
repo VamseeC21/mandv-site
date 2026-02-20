@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>M & V - Our Scrapbook</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Dancing+Script:wght@400;700&family=Quicksand:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #1a1215;
+      font-family: 'Quicksand', sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      cursor: default;
+    }
+
+    /* ─── waterfall container ─── */
+    .waterfall {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex;
+      gap: 10px;
+      padding: 0 10px;
+      z-index: 1;
+    }
+
+    .waterfall-column {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .waterfall-strip {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      animation: fall linear infinite;
+      will-change: transform;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(0);
+      }
+      100% {
+        transform: translateY(var(--scroll-amount, -50%));
+      }
+    }
+
+    .waterfall-img-wrap {
+      flex-shrink: 0;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+      filter: brightness(0.55) saturate(0.85);
+    }
+
+    .waterfall-img-wrap:hover {
+      transform: scale(1.04);
+      box-shadow: 0 8px 40px rgba(194, 109, 138, 0.5);
+      filter: brightness(1) saturate(1.1);
+      z-index: 10;
+    }
+
+    .waterfall-img-wrap img {
+      width: 100%;
+      display: block;
+      border-radius: 10px;
+    }
+
+    /* ─── hero overlay ─── */
+    .hero-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      background: radial-gradient(ellipse at center, rgba(26, 18, 21, 0.75) 0%, rgba(26, 18, 21, 0.3) 60%, transparent 100%);
+      transition: opacity 0.6s ease;
+    }
+
+    .hero-overlay.hidden {
+      opacity: 0;
+      pointer-events: none !important;
+    }
+
+    .hero-card {
+      text-align: center;
+      pointer-events: auto;
+      padding: 50px 60px;
+      border-radius: 24px;
+      background: rgba(26, 18, 21, 0.55);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(212, 160, 185, 0.15);
+      animation: heroFadeIn 1.5s ease-out;
+      max-width: 520px;
+      position: relative;
+    }
+
+    .hero-close {
+      position: absolute;
+      top: 14px; right: 18px;
+      font-size: 22px;
+      color: rgba(201, 160, 176, 0.5);
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: 'Quicksand', sans-serif;
+      transition: color 0.3s;
+      padding: 4px 8px;
+    }
+
+    .hero-close:hover {
+      color: #e8b4c8;
+    }
+
+    @keyframes heroFadeIn {
+      from { opacity: 0; transform: translateY(20px) scale(0.95); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .hero-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(3.5rem, 8vw, 6rem);
+      color: #e8b4c8;
+      line-height: 1;
+      text-shadow: 0 0 40px rgba(194, 109, 138, 0.3);
+    }
+
+    .hero-ampersand {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: clamp(2rem, 4vw, 3rem);
+      color: #d4a0b9;
+      display: block;
+      margin: 4px 0;
+    }
+
+    .hero-divider {
+      width: 80px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #d4a0b9, transparent);
+      margin: 20px auto;
+    }
+
+    .hero-subtitle {
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 300;
+      font-size: clamp(0.75rem, 2vw, 1rem);
+      color: #c9a0b0;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+    }
+
+    .hero-tagline {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: clamp(0.85rem, 1.5vw, 1.05rem);
+      color: rgba(201, 160, 176, 0.7);
+      max-width: 380px;
+      line-height: 1.7;
+      margin: 18px auto 0;
+    }
+
+    /* subtle hint to click photos */
+    .hero-hint {
+      margin-top: 24px;
+      font-size: 0.75rem;
+      color: rgba(201, 160, 176, 0.45);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      animation: pulse-hint 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-hint {
+      0%, 100% { opacity: 0.45; }
+      50% { opacity: 0.8; }
+    }
+
+    /* ─── top & bottom fade masks ─── */
+    .fade-top, .fade-bottom {
+      position: fixed;
+      left: 0; right: 0;
+      height: 120px;
+      z-index: 40;
+      pointer-events: none;
+    }
+
+    .fade-top {
+      top: 0;
+      background: linear-gradient(to bottom, #1a1215 0%, transparent 100%);
+    }
+
+    .fade-bottom {
+      bottom: 0;
+      background: linear-gradient(to top, #1a1215 0%, transparent 100%);
+    }
+
+    /* ─── lightbox ─── */
+    .lightbox {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(15, 10, 12, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .lightbox.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 85vh;
+      border-radius: 12px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+      transform: scale(0.9);
+      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .lightbox.active img {
+      transform: scale(1);
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 30px; right: 30px;
+      font-size: 28px;
+      color: #fff;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.3s;
+      background: none;
+      border: none;
+      font-family: 'Quicksand', sans-serif;
+    }
+
+    .lightbox-close:hover { opacity: 1; }
+
+    .lightbox-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 36px;
+      color: #fff;
+      cursor: pointer;
+      opacity: 0.6;
+      transition: opacity 0.3s;
+      background: none;
+      border: none;
+      padding: 20px;
+    }
+
+    .lightbox-nav:hover { opacity: 1; }
+    .lightbox-prev { left: 15px; }
+    .lightbox-next { right: 15px; }
+
+    /* ─── responsive ─── */
+    @media (max-width: 768px) {
+      .waterfall { gap: 6px; padding: 0 6px; }
+      .waterfall-strip { gap: 6px; }
+      .hero-card { padding: 35px 30px; margin: 0 20px; }
+      .fade-top, .fade-bottom { height: 80px; }
+    }
+
+    @media (max-width: 480px) {
+      .waterfall { gap: 4px; padding: 0 4px; }
+      .waterfall-strip { gap: 4px; }
+      .hero-card { padding: 30px 24px; }
+    }
+
+    /* ─── custom scrollbar ─── */
+    ::-webkit-scrollbar { width: 0; }
+  </style>
+</head>
+<body>
+
+  <!-- fade masks for top and bottom edges -->
+  <div class="fade-top"></div>
+  <div class="fade-bottom"></div>
+
+  <!-- waterfall columns -->
+  <div class="waterfall" id="waterfall"></div>
+
+  <!-- hero overlay -->
+  <div class="hero-overlay">
+    <div class="hero-card">
+      <button class="hero-close" id="hero-close">&times;</button>
+      <h1 class="hero-title">M <span class="hero-ampersand">&</span> V</h1>
+      <div class="hero-divider"></div>
+      <p class="hero-subtitle">our story in pictures</p>
+      <p class="hero-tagline">Every picture tells a little piece of our story.</p>
+      <p class="hero-hint">click any photo to explore</p>
+    </div>
+  </div>
+
+  <!-- lightbox -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightbox-close">&times;</button>
+    <button class="lightbox-nav lightbox-prev" id="lb-prev">&#8249;</button>
+    <img id="lightbox-img" src="" alt="">
+    <button class="lightbox-nav lightbox-next" id="lb-next">&#8250;</button>
+  </div>
+
+  <script>
+    // ─── Image list ───
+    const images = [
+      "images/IMG_0362.jpg",
+      "images/100_3127.JPG",
+      "images/IMG_0440.jpg",
+      "images/3CFA37CB-6819-4AB4-A19F-C9892F9203F0.JPG",
+      "images/IMG_1161.jpg",
+      "images/IMG_0590.PNG",
+      "images/IMG_0513.jpg",
+      "images/IMG_0399.JPG",
+      "images/IMG_7546.jpg",
+      "images/IMG_0461.jpg",
+      "images/IMG_1230.jpg",
+      "images/53B3852C-E034-4644-91CB-AC955F49482A.JPG",
+      "images/IMG_0633.jpg",
+      "images/IMG_1050.PNG",
+      "images/IMG_0393.jpg",
+      "images/IMG_1266.jpg",
+      "images/IMG_0661.JPG",
+      "images/IMG_1237.jpg",
+      "images/IMG_1408.jpg",
+      "images/IMG_2222.jpg",
+      "images/IMG_0663.JPG",
+      "images/IMG_1192.jpg",
+      "images/IMG_7568.jpg",
+      "images/IMG_1417.jpg",
+      "images/IMG_2195.jpg",
+      "images/IMG_6596.PNG",
+      "images/IMG_7577.jpg",
+      "images/IMG_1672.JPG",
+      "images/lp_image.jpg"
+    ];
+
+    // ─── Determine column count based on screen width ───
+    function getColumnCount() {
+      if (window.innerWidth <= 480) return 3;
+      if (window.innerWidth <= 768) return 4;
+      return 5;
+    }
+
+    // ─── Build the waterfall ───
+    function buildWaterfall() {
+      const container = document.getElementById('waterfall');
+      container.innerHTML = '';
+      const cols = getColumnCount();
+
+      // Shuffle images into columns
+      const columnImages = Array.from({ length: cols }, () => []);
+      const shuffled = [...images].sort(() => Math.random() - 0.5);
+
+      shuffled.forEach((src, i) => {
+        columnImages[i % cols].push(src);
+      });
+
+      // Different speeds per column for visual variety
+      const speeds = [28, 35, 22, 40, 30];
+
+      columnImages.forEach((colImgs, colIndex) => {
+        const column = document.createElement('div');
+        column.className = 'waterfall-column';
+
+        const strip = document.createElement('div');
+        strip.className = 'waterfall-strip';
+        strip.style.animationDuration = speeds[colIndex % speeds.length] + 's';
+
+        // Create images multiple times for seamless loop
+        const repeatCount = Math.max(3, Math.ceil(window.innerHeight / 150));
+
+        // Each strip repeats N times; scroll by 1/N to loop one set of images seamlessly
+        const scrollPercent = (100 / repeatCount).toFixed(4);
+        strip.style.setProperty('--scroll-amount', `-${scrollPercent}%`);
+
+        // Direction: odd columns fall up for variety
+        if (colIndex % 2 === 1) {
+          strip.style.animationDirection = 'reverse';
+        }
+        for (let repeat = 0; repeat < repeatCount; repeat++) {
+          colImgs.forEach((src) => {
+            const wrap = document.createElement('div');
+            wrap.className = 'waterfall-img-wrap';
+
+            const img = document.createElement('img');
+            img.src = src;
+            img.alt = 'Memory';
+            img.loading = 'lazy';
+            wrap.appendChild(img);
+
+            // Click to open lightbox
+            const originalIndex = images.indexOf(src);
+            wrap.addEventListener('click', (e) => {
+              e.stopPropagation();
+              openLightbox(originalIndex);
+            });
+
+            strip.appendChild(wrap);
+          });
+        }
+
+        column.appendChild(strip);
+        container.appendChild(column);
+      });
+    }
+
+    buildWaterfall();
+
+    // Rebuild on resize (debounced)
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(buildWaterfall, 300);
+    });
+
+    // ─── Lightbox ───
+    let currentIndex = 0;
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+
+    const heroOverlay = document.querySelector('.hero-overlay');
+
+    function dismissHero() {
+      heroOverlay.classList.add('hidden');
+    }
+
+    document.getElementById('hero-close').addEventListener('click', dismissHero);
+
+    function openLightbox(index) {
+      currentIndex = index;
+      lightboxImg.src = images[index];
+      lightbox.classList.add('active');
+      dismissHero();
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('active');
+    }
+
+    document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+
+    document.getElementById('lb-prev').addEventListener('click', (e) => {
+      e.stopPropagation();
+      currentIndex = (currentIndex - 1 + images.length) % images.length;
+      lightboxImg.src = images[currentIndex];
+    });
+
+    document.getElementById('lb-next').addEventListener('click', (e) => {
+      e.stopPropagation();
+      currentIndex = (currentIndex + 1) % images.length;
+      lightboxImg.src = images[currentIndex];
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (!lightbox.classList.contains('active')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') {
+        currentIndex = (currentIndex - 1 + images.length) % images.length;
+        lightboxImg.src = images[currentIndex];
+      }
+      if (e.key === 'ArrowRight') {
+        currentIndex = (currentIndex + 1) % images.length;
+        lightboxImg.src = images[currentIndex];
+      }
+    });
+
+  </script>
+</body>
+</html>
